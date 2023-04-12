@@ -1,4 +1,4 @@
-console.log("v3.04");
+console.log("v3.05");
 
 // Draw stuff
 const canvas = document.getElementById("canvas");
@@ -361,14 +361,14 @@ $(document).ready(function() {
           // Get the data URL of the canvas image
           const dataURL = canvas.toDataURL("image/jpeg", 1);
           console.log("html2canvas generated a dataURL from the canvas");
-          console.log(dataURL);
+          //console.log(dataURL);
 
           // Save the data URL to sessionStorage
-          sessionStorage.setItem("imageToShare", dataURL);
+          //sessionStorage.setItem("imageToShare", dataURL);
 
-          $("#customiser__save__preview-img").attr("src",dataURL);
+          //$("#customiser__save__preview-img").attr("src",dataURL);
 
-          wrapperDiv.style.display = originalDisplayStyle;
+          //wrapperDiv.style.display = originalDisplayStyle;
           $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
           $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
         });
