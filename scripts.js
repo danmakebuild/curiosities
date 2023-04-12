@@ -1,4 +1,4 @@
-console.log("v3.05");
+console.log("v3.07");
 
 // Draw stuff
 const canvas = document.getElementById("canvas");
@@ -335,14 +335,14 @@ $(document).ready(function() {
 
 // Share 2.0
 $(document).ready(function() {
-  const devicePixelRatio = window.devicePixelRatio || 1;
-  const saveAndShareButton = document.querySelector('#triggerCanvasCapture');
-  saveAndShareButton.addEventListener('click', () => {
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const saveAndShareButton = document.querySelector('#triggerCanvasCapture');
+    saveAndShareButton.addEventListener('click', () => {
       setTimeout(() => {
         const wrapperDiv = document.querySelector('.postcard-output-wrapper');
         const originalDisplayStyle = wrapperDiv.style.display;
         wrapperDiv.style.display = 'flex';
-
+  
         html2canvas(wrapperDiv, {
           allowTaint: false,
           height: 960,
@@ -354,27 +354,27 @@ $(document).ready(function() {
           onclone: (clonedDoc) => {
             // Find the canvas element in the cloned document
             const canvas = clonedDoc.querySelector('canvas');
-            canvas.click();
             console.log("html2canvas cloned the canvas");
           }
         }).then(canvas => {
-          // Get the data URL of the canvas image
-          const dataURL = canvas.toDataURL("image/jpeg", 1);
-          console.log("html2canvas generated a dataURL from the canvas");
-          //console.log(dataURL);
-
-          // Save the data URL to sessionStorage
-          //sessionStorage.setItem("imageToShare", dataURL);
-
-          //$("#customiser__save__preview-img").attr("src",dataURL);
-
-          //wrapperDiv.style.display = originalDisplayStyle;
-          $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
-          $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
+          // Get the Blob object of the canvas image
+          canvas.toBlob(blob => {
+            // Save the blob object to sessionStorage
+            const url = URL.createObjectURL(blob);
+            sessionStorage.setItem("imageToShare", url);
+  
+            // Set the preview image to the blob object
+            $("#customiser__save__preview-img").attr("src", url);
+  
+            wrapperDiv.style.display = originalDisplayStyle;
+            $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
+            $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
+          }, "image/jpeg", 1);
         });
       }, 500); // 1-second delay
     });      
-});
+  });
+  
 
 function shareImage() {
   const dataUrl = sessionStorage.getItem('imageToShare');
