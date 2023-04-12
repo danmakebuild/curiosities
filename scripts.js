@@ -1,4 +1,4 @@
-console.log("v3.02");
+console.log("v3.03");
 
 // Draw stuff
 const canvas = document.getElementById("canvas");
