@@ -354,6 +354,7 @@ $(document).ready(function() {
           onclone: (clonedDoc) => {
             // Find the canvas element in the cloned document
             const canvas = clonedDoc.querySelector('canvas');
+            canvas.click();
             console.log("html2canvas cloned the canvas");
           }
         }).then(canvas => {
@@ -363,7 +364,7 @@ $(document).ready(function() {
           // console.log(dataURL);
 
           // Save the data URL to sessionStorage
-          sessionStorage.setItem("imageToShare", dataURL);
+          //sessionStorage.setItem("imageToShare", dataURL);
 
           $("#customiser__save__preview-img").attr("src",dataURL);
 
