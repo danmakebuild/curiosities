@@ -1,9 +1,6 @@
 console.log("v3.01");
 
-////
-// Drawing stuff
-////
-
+// Draw stuff
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -128,6 +125,7 @@ function draw(e) {
   }
 }
 
+
 function stopDrawing(e) {
     isDrawing = false;
     if (mode === "sticker") {
@@ -143,7 +141,7 @@ function stopDrawing(e) {
     }
     ctx.beginPath();
   }
-  
+
 function fillCanvasWithTexture(textureUrl) {
 	saveCanvasState(); 
   const img = new Image();
@@ -175,7 +173,7 @@ function addSticker(e) {
       img.crossOrigin = "anonymous";
     }
   }
-  
+
 
 document.getElementById("brush-btn").addEventListener("click", () => {
   mode = "brush";
@@ -313,19 +311,15 @@ e.preventDefault();
 }
 }, { passive: false });
 
-// Customiser colour selectors
-$(".colour-box").click(function(){
-    $(".colour-box").removeClass("active");
-    $(this).addClass("active");
-});
-
-// Select the first colour on load
-$(".colour-box").click();
 
 
-////
+
+
+
+
+
 // Save and share stuff
-/////
+// Use html2canvas to power the download button
 $(document).ready(function() {
 	const saveButton = document.querySelector('#customiser__save__download');
   saveButton.addEventListener('click', () => {
@@ -339,6 +333,7 @@ $(document).ready(function() {
   });
 });
 
+// Share 2.0
 $(document).ready(function() {
   const devicePixelRatio = window.devicePixelRatio || 1;
   const saveAndShareButton = document.querySelector('#triggerCanvasCapture');
@@ -347,7 +342,7 @@ $(document).ready(function() {
         const wrapperDiv = document.querySelector('.postcard-output-wrapper');
         const originalDisplayStyle = wrapperDiv.style.display;
         wrapperDiv.style.display = 'flex';
-    
+
         html2canvas(wrapperDiv, {
           allowTaint: false,
           height: 960,
@@ -366,12 +361,12 @@ $(document).ready(function() {
           const dataURL = canvas.toDataURL("image/jpeg", 1);
           console.log("html2canvas generated a dataURL from the canvas");
           // console.log(dataURL);
-    
+
           // Save the data URL to sessionStorage
           sessionStorage.setItem("imageToShare", dataURL);
 
           $("#customiser__save__preview-img").attr("src",dataURL);
-    
+
           wrapperDiv.style.display = originalDisplayStyle;
           $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
           $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
@@ -411,16 +406,9 @@ function shareImage() {
   }
 }
 
-// Display relevant save and share buttons
-if(navigator.share) {
-    $("#customiser__save__download").hide();
-} else {
-    $("#customiser__save__share").hide();
-}
-  
 // Add click event listener to the share button
 document.querySelector('#customiser__save__share').addEventListener('click', shareImage);
-  
+
 function dataURItoBlob(dataURI) {
   var binary = atob(dataURI.split(',')[1]);
   var array = [];
@@ -428,53 +416,4 @@ function dataURItoBlob(dataURI) {
       array.push(binary.charCodeAt(i));
   }
   return new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-}
-
-
-////
-// Prepare the postcard for save and share 
-////
-
-// Set postcard-outer-wrapper background using blob
-setElementBackgroundFromURL("https://uploads-ssl.webflow.com/62c4ba8818b0e1ab28f85ca3/64303feaf88b72290aecf24e_postcard-output__background--small.png", ".postcard-output-wrapper");
- 
-setElementBackgroundFromURL("https://uploads-ssl.webflow.com/62c4ba8818b0e1ab28f85ca3/6430596368eac953904d4822_fruittella-sticker--pink.png", ".postcard-output__sticker");
-
-setElementBackgroundFromURL("{{wf {&quot;path&quot;:&quot;world-ref:world-selector-background&quot;,&quot;type&quot;:&quot;ImageRef&quot;\} }}", ".postcard__img-wrapper--output");
-
-model.addEventListener('poster-dismissed', () => {
-  // Code to be executed when the model is fully loaded
-  console.log('Model fully loaded');
-  $(".customiser__play__embed").removeClass("visibility--hidden");
-  $(".customiser__play__embed").appendTo("#tab--customiser__play .customiser__tab-inner");
-  $("#apply").removeClass("model-loading");
-});
-
-
-////
-// Set background image via blob
-////
-
-function setElementBackgroundFromURL(url, elementSelector) {
-	//console.log("Running setElementBackgroundFromURL function for " + elementSelector);
-  const element = document.querySelector(elementSelector);
-  if (!element) {
-    console.error(`Element with selector '${elementSelector}' not found!`);
-    return;
-  }
-
-  fetch(url)
-    .then(response => response.blob())
-    .then(blob => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const dataURL = reader.result;
-        //console.log('Data URL:', dataURL);
-        element.style.backgroundImage = `url(${dataURL})`;
-      };
-    })
-    .catch(error => {
-      console.error('Error loading image:', error);
-    });
 }
