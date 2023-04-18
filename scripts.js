@@ -1,5 +1,4 @@
-console.log("v3.07");
-
+console.log("v3.41");
 // Draw stuff
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -141,7 +140,7 @@ function stopDrawing(e) {
     }
     ctx.beginPath();
   }
-
+  
 function fillCanvasWithTexture(textureUrl) {
 	saveCanvasState(); 
   const img = new Image();
@@ -173,7 +172,7 @@ function addSticker(e) {
       img.crossOrigin = "anonymous";
     }
   }
-
+  
 
 document.getElementById("brush-btn").addEventListener("click", () => {
   mode = "brush";
@@ -314,12 +313,8 @@ e.preventDefault();
 
 
 
-
-
-
-
 // Save and share stuff
-// Use html2canvas to power the download button
+// Use dom-to-image-improved to power the download button
 $(document).ready(function() {
 	const saveButton = document.querySelector('#customiser__save__download');
   saveButton.addEventListener('click', () => {
@@ -334,47 +329,65 @@ $(document).ready(function() {
 });
 
 // Share 2.0
-$(document).ready(function() {
-    const devicePixelRatio = window.devicePixelRatio || 1;
-    const saveAndShareButton = document.querySelector('#triggerCanvasCapture');
-    saveAndShareButton.addEventListener('click', () => {
-      setTimeout(() => {
-        const wrapperDiv = document.querySelector('.postcard-output-wrapper');
-        const originalDisplayStyle = wrapperDiv.style.display;
-        wrapperDiv.style.display = 'flex';
+const devicePixelRatio = window.devicePixelRatio || 1;
+const saveAndShareButton = document.querySelector('#triggerCanvasCapture');
+saveAndShareButton.addEventListener('click', () => {
+
+  const wrapperDiv = document.querySelector('.postcard-output-wrapper');
+  const originalDisplayStyle = wrapperDiv.style.display;
+  wrapperDiv.style.display = 'flex';
+
+  const domToImageOptions = {
+    height: 960,
+    width: 540,
+    style: {
+      'transform': 'scale(1)',
+      'transform-origin': 'top left'
+    },
+    filter: function (element) {
+      // Exclude elements with class "exclude-from-share"
+      return element.className ? element.className.indexOf('exclude-from-share') === -1 : true;
+    },
+    quality: 1,
+    cacheBust: true,
+    useCORS: true
+  }
+
+
+  const targetElement = document.querySelector('.postcard__text__name.on-screen');
+  const outputElement = document.querySelector('.postcard__text__name--image');
+  const html2canvasOptions = {
+      allowTaint: false,
+      useCORS: false,
+      logging: true,
+  };
+
+
+  setTimeout(() => {
+    window.domtoimage.toJpeg(wrapperDiv, domToImageOptions)
+      .then(dataURL => {
   
-        html2canvas(wrapperDiv, {
-          allowTaint: false,
-          height: 960,
-          width: 540,
-          scale: 2,
-          useCORS: true,
-          logging: true,
-          timeout: 10000,
-          onclone: (clonedDoc) => {
-            // Find the canvas element in the cloned document
-            const canvas = clonedDoc.querySelector('canvas');
-            console.log("html2canvas cloned the canvas");
-          }
-        }).then(canvas => {
-          // Get the Blob object of the canvas image
-          canvas.toBlob(blob => {
-            // Save the blob object to sessionStorage
-            const url = URL.createObjectURL(blob);
-            sessionStorage.setItem("imageToShare", url);
+        window.domtoimage.toJpeg(wrapperDiv, domToImageOptions)
+        .then(dataURL => {
   
-            // Set the preview image to the blob object
-            $("#customiser__save__preview-img").attr("src", url);
+          console.log("dom-to-image-improved generated a dataURL from the HTML element");
   
-            wrapperDiv.style.display = originalDisplayStyle;
-            $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
-            $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
-          }, "image/jpeg", 1);
-        });
-      }, 500); // 1-second delay
-    });      
-  });
+          // Save the data URL to sessionStorage
+          sessionStorage.setItem("imageToShare", dataURL);
   
+          $("#customiser__save__preview-img").attr("src", dataURL);
+  
+          wrapperDiv.style.display = originalDisplayStyle;
+          $("#customiser__save__loader .customiser__save__loader__share-wrap").addClass("show");
+          $("#customiser__save__loader .customiser__save__loader__inner").removeClass("show");
+        })
+      })
+      .catch(error => {
+        console.error('Error generating image', error);
+      });
+  }, 200);
+});
+
 
 function shareImage() {
   const dataUrl = sessionStorage.getItem('imageToShare');
@@ -406,10 +419,10 @@ function shareImage() {
     console.warn('Sharing not supported or image not found');
   }
 }
-
+  
 // Add click event listener to the share button
 document.querySelector('#customiser__save__share').addEventListener('click', shareImage);
-
+  
 function dataURItoBlob(dataURI) {
   var binary = atob(dataURI.split(',')[1]);
   var array = [];
